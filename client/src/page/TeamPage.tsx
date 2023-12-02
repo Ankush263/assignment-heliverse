@@ -28,13 +28,19 @@ interface TeamInterface {
 	userIds: UserInterface[];
 	name: string;
 	description: string;
-	createdAt: Date;
+	createdAt: Date | string;
 }
 
 function TeamPage() {
 	const [teams, setTeams] = useState<TeamInterface[]>([]);
 	const [opened, { open, close }] = useDisclosure(false);
-	const [teamDetails, setTeamDetails] = useState<TeamInterface>();
+	const [teamDetails, setTeamDetails] = useState<TeamInterface>({
+		_id: '',
+		userIds: [],
+		name: '',
+		description: '',
+		createdAt: '',
+	});
 
 	const handleDelete = async (_id: string) => {
 		try {
@@ -55,6 +61,21 @@ function TeamPage() {
 		}
 	};
 
+	const handleCloseTeam = async () => {
+		try {
+			setTeamDetails({
+				_id: '',
+				userIds: [],
+				name: '',
+				description: '',
+				createdAt: '',
+			});
+			close();
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
 	const fetch = useCallback(async () => {
 		try {
 			const team = await getTeams();
@@ -69,7 +90,12 @@ function TeamPage() {
 	}, [fetch]);
 	return (
 		<Box miw={'100vw'}>
-			<Modal opened={opened} onClose={close} title={teamDetails?.name} centered>
+			<Modal
+				opened={opened}
+				onClose={handleCloseTeam}
+				title={teamDetails?.name}
+				centered
+			>
 				<Box>Description: {teamDetails?.description}</Box>
 				{teamDetails?.userIds.map((user) => {
 					return (
