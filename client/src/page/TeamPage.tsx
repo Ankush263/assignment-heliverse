@@ -17,6 +17,7 @@ import { deleteTeam, getTeam } from '../api';
 import { useDisclosure } from '@mantine/hooks';
 
 interface UserInterface {
+	_id: string;
 	first_name: string;
 	last_name: string;
 	email: string;
@@ -72,7 +73,13 @@ function TeamPage() {
 				<Box>Description: {teamDetails?.description}</Box>
 				{teamDetails?.userIds.map((user) => {
 					return (
-						<Card shadow="sm" padding="lg" radius="md" withBorder>
+						<Card
+							shadow="sm"
+							padding="lg"
+							radius="md"
+							withBorder
+							key={user._id}
+						>
 							<Card.Section>
 								<Group position="apart" mt="md" mb="xs">
 									<Avatar src={user.avatar} alt="#" bg={'dark'} radius={'xl'} />
@@ -117,6 +124,7 @@ function TeamPage() {
 														<Tooltip
 															label={`${user.first_name} ${user.last_name}`}
 															withArrow
+															key={user._id}
 														>
 															<Avatar
 																src={`${user.avatar}`}
