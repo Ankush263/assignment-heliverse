@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const URL = `http://localhost:8000`;
+// const URL = `http://localhost:8000`;
+const URL = `https://heliverse-server-crnu.onrender.com`;
 
 const USER_URL = `${URL}/api/users`;
 const TEAM_URL = `${URL}/api/team`;
