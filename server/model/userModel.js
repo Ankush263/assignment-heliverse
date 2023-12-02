@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema({
 		enum: ['Male', 'Female', 'Others'],
 		default: 'Male',
 	},
-	avater: String,
+	avatar: String,
 	domain: {
 		type: String,
 		required: [true, 'user must from a domain'],

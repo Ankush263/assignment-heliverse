@@ -74,19 +74,25 @@ exports.deleteUser = catchAsync(async (req, res, next) => {
 });
 
 exports.searchByUsername = catchAsync(async (req, res, next) => {
-	const user = await User.find({
-		$or: [
-			{
-				first_name: {
-					$regex: '.*' + req.query.first_name + '.*',
-					$options: 'i',
+	let filter = {};
+	const features = new APIFeatures(
+		User.find({
+			$or: [
+				{
+					first_name: {
+						$regex: '.*' + req.query.first_name + '.*',
+						$options: 'i',
+					},
 				},
-			},
-		],
-	});
+			],
+		}),
+		req.query
+	).pagination();
+	const user = await features.query;
 
 	res.status(201).json({
 		status: 'success',
+		results: user.length,
 		data: {
 			data: user,
 		},

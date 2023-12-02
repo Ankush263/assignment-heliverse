@@ -33,6 +33,7 @@ const teamSchema = new mongoose.Schema(
 teamSchema.pre(/^find/, function (next) {
 	this.populate({
 		path: 'userIds',
+		select: 'email avatar first_name last_name',
 	});
 
 	next();
