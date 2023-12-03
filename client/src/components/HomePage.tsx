@@ -67,7 +67,13 @@ function HomePage() {
 	}, [activePage]);
 
 	useEffect(() => {
-		fetch();
+		let isMounted = true;
+		if (isMounted) {
+			fetch();
+		}
+		return () => {
+			isMounted = false;
+		};
 	}, [fetch]);
 
 	return (
