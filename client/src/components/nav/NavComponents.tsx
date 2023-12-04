@@ -14,39 +14,30 @@ import { useState } from 'react';
 import { createTeam } from '../../api';
 import { notifications } from '@mantine/notifications';
 import { AxiosError } from 'axios';
+import {
+	setSearchNameAction,
+	setGenderAction,
+	setDomainAction,
+	setAvailableAction,
+	setTeamCreateAction,
+	setUserIdAction,
+} from '../../redux/user/userSlice';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '../../redux/store';
 
-interface NavComponentsInterface {
-	searchName: string;
-	setSearchName: React.Dispatch<React.SetStateAction<string>>;
-	gender: string;
-	setGender: React.Dispatch<React.SetStateAction<string>>;
-	domain: string;
-	setDomain: React.Dispatch<React.SetStateAction<string>>;
-	available: string;
-	setAvailable: React.Dispatch<React.SetStateAction<string>>;
-	teamCreate: boolean;
-	setTeamCreate: React.Dispatch<React.SetStateAction<boolean>>;
-	userId: string[];
-	setUserId: React.Dispatch<React.SetStateAction<string[]>>;
-}
-
-function NavComponents({
-	searchName,
-	setSearchName,
-	gender,
-	setGender,
-	domain,
-	setDomain,
-	available,
-	setAvailable,
-	teamCreate,
-	setTeamCreate,
-	userId,
-	setUserId,
-}: NavComponentsInterface) {
+function NavComponents() {
 	const [opened, { open, close }] = useDisclosure(false);
 	const [teamName, setTeamName] = useState<string>('');
 	const [teamDesc, setTeamDesc] = useState<string>('');
+
+	const searchname = useSelector((state: RootState) => state.searchName.value);
+	const gender = useSelector((state: RootState) => state.gender.value);
+	const domain = useSelector((state: RootState) => state.domain.value);
+	const available = useSelector((state: RootState) => state.available.value);
+	const teamCreate = useSelector((state: RootState) => state.teamcreate.value);
+	const userId = useSelector((state: RootState) => state.userId.value);
+
+	const dispatch = useDispatch();
 
 	// eslint-disable-next-line prefer-const
 	let history = useHistory();
@@ -73,7 +64,7 @@ function NavComponents({
 
 	const handleCreate = async () => {
 		try {
-			setTeamCreate(true);
+			dispatch(setTeamCreateAction(true));
 			close();
 		} catch (error) {
 			console.log(error);
@@ -82,18 +73,18 @@ function NavComponents({
 
 	const handleClick = async () => {
 		try {
-			setTeamCreate(false);
+			dispatch(setTeamCreateAction(false));
 			close();
 			await createTeam(teamName, teamDesc, userId);
 			setTeamName('');
 			setTeamDesc('');
-			setUserId([]);
+			dispatch(setUserIdAction([]));
 			history.push('/team');
 		} catch (error: unknown) {
 			console.log('error: ', error);
 			setTeamName('');
 			setTeamDesc('');
-			setUserId([]);
+			dispatch(setUserIdAction([]));
 			if (error instanceof AxiosError) {
 				notifications.show({
 					color: 'red',
@@ -152,7 +143,7 @@ function NavComponents({
 						data={genderData}
 						mr={10}
 						searchable
-						onSearchChange={setGender}
+						onSearchChange={(query) => dispatch(setGenderAction(query))}
 						searchValue={gender}
 						clearable
 						nothingFound="No options"
@@ -167,7 +158,7 @@ function NavComponents({
 						]}
 						mr={10}
 						searchable
-						onSearchChange={setAvailable}
+						onSearchChange={(query) => dispatch(setAvailableAction(query))}
 						searchValue={available}
 						clearable
 						nothingFound="No options"
@@ -178,7 +169,7 @@ function NavComponents({
 						placeholder="Domain"
 						data={domainData}
 						mr={10}
-						onSearchChange={setDomain}
+						onSearchChange={(query) => dispatch(setDomainAction(query))}
 						searchValue={domain}
 						searchable
 						clearable
@@ -188,8 +179,8 @@ function NavComponents({
 				<Grid.Col md={6} lg={2}>
 					<Input
 						placeholder="search name"
-						value={searchName}
-						onChange={(e) => setSearchName(e.target.value)}
+						value={searchname}
+						onChange={(e) => dispatch(setSearchNameAction(e.target.value))}
 					/>
 				</Grid.Col>
 				<Grid.Col md={6} lg={2}>

@@ -3,27 +3,19 @@ import { getUsersByPage, searchUsers, userByFilters } from '../api';
 import { useEffect, useCallback, useState } from 'react';
 import NavComponents from './nav/NavComponents';
 import UserCardComponent from './UserCardComponent';
-
-interface userInterface {
-	_id: string;
-	avatar: string;
-	available: boolean;
-	domain: string;
-	email: string;
-	first_name: string;
-	last_name: string;
-	gender: string;
-}
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../redux/store';
+import { setUsersAction } from '../redux/user/userSlice';
 
 function HomePage() {
-	const [user, setUser] = useState<userInterface[]>([]);
 	const [activePage, setActivePage] = useState<number>(1);
-	const [searchName, setSearchName] = useState<string>('');
-	const [gender, setGender] = useState<string>('');
-	const [domain, setDomain] = useState<string>('');
-	const [available, setAvailable] = useState<string>('');
-	const [teamCreate, setTeamCreate] = useState<boolean>(false);
-	const [userId, setUserId] = useState<string[]>([]);
+
+	const searchname = useSelector((state: RootState) => state.searchName.value);
+	const gender = useSelector((state: RootState) => state.gender.value);
+	const domain = useSelector((state: RootState) => state.domain.value);
+	const available = useSelector((state: RootState) => state.available.value);
+
+	const dispatch = useDispatch();
 
 	const handleFilter = useCallback(async () => {
 		try {
@@ -34,11 +26,11 @@ function HomePage() {
 					? false
 					: '';
 			const users = await userByFilters(gender, availableVal, domain);
-			setUser(users.data.data.data);
+			dispatch(setUsersAction(users.data.data.data));
 		} catch (error) {
 			console.log(error);
 		}
-	}, [available, domain, gender]);
+	}, [available, dispatch, domain, gender]);
 
 	useEffect(() => {
 		handleFilter();
@@ -46,25 +38,25 @@ function HomePage() {
 
 	const handleSearch = useCallback(async () => {
 		try {
-			const users = await searchUsers(searchName);
-			setUser(users.data.data.data);
+			const users = await searchUsers(searchname);
+			dispatch(setUsersAction(users.data.data.data));
 		} catch (error) {
 			console.log(error);
 		}
-	}, [searchName]);
+	}, [dispatch, searchname]);
 
 	useEffect(() => {
 		handleSearch();
-	}, [handleSearch, searchName]);
+	}, [handleSearch, searchname]);
 
 	const fetch = useCallback(async () => {
 		try {
 			const users = await getUsersByPage(activePage);
-			setUser(users.data.data.data);
+			dispatch(setUsersAction(users.data.data.data));
 		} catch (error) {
 			console.log(error);
 		}
-	}, [activePage]);
+	}, [activePage, dispatch]);
 
 	useEffect(() => {
 		let isMounted = true;
@@ -78,28 +70,10 @@ function HomePage() {
 
 	return (
 		<Flex direction={'column'} justify={'center'} align={'center'}>
-			<NavComponents
-				searchName={searchName}
-				setSearchName={setSearchName}
-				gender={gender}
-				setGender={setGender}
-				domain={domain}
-				setDomain={setDomain}
-				available={available}
-				setAvailable={setAvailable}
-				teamCreate={teamCreate}
-				setTeamCreate={setTeamCreate}
-				userId={userId}
-				setUserId={setUserId}
-			/>
+			<NavComponents />
 
 			<Box miw={'100vw'}>
-				<UserCardComponent
-					user={user}
-					userId={userId}
-					setUserId={setUserId}
-					teamCreate={teamCreate}
-				/>
+				<UserCardComponent />
 			</Box>
 			<Flex mb={20} mt={20} justify={'center'}>
 				<Pagination value={activePage} onChange={setActivePage} total={50} />

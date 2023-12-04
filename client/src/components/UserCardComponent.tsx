@@ -11,35 +11,21 @@ import {
 	Tooltip,
 } from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../redux/store';
+import { setUserIdAction } from '../redux/user/userSlice';
 
-interface userInterface {
-	_id: string;
-	avatar: string;
-	available: boolean;
-	domain: string;
-	email: string;
-	first_name: string;
-	last_name: string;
-	gender: string;
-}
+function UserCardComponent() {
+	const teamCreate = useSelector((state: RootState) => state.teamcreate.value);
+	const userId = useSelector((state: RootState) => state.userId.value);
+	const user = useSelector((state: RootState) => state.user.users);
 
-interface userCardComponent {
-	user: userInterface[];
-	userId: string[];
-	setUserId: React.Dispatch<React.SetStateAction<string[]>>;
-	teamCreate: boolean;
-}
+	const dispatch = useDispatch();
 
-function UserCardComponent({
-	user,
-	userId,
-	setUserId,
-	teamCreate,
-}: userCardComponent) {
 	const handleAdduser = async (_id: string) => {
 		try {
 			if (!userId.includes(_id)) {
-				setUserId((prev) => [...prev, _id]);
+				dispatch(setUserIdAction([...userId, _id]));
 			}
 		} catch (error) {
 			console.log(error);
